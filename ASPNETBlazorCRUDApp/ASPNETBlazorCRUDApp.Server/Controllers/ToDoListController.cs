@@ -26,22 +26,29 @@ namespace ASPNETBlazorCRUDApp.Server.Controllers
             return _context.ToDoLists;
         }
 
+        // POST: api/ToDo
+        [HttpPost]
+        public async Task<IActionResult> PostToDo([FromBody] ToDoList todo)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            _context.ToDoLists.Add(todo);
+            await _context.SaveChangesAsync();
+            return CreatedAtAction("GetToDo", new { id = todo.ID }, todo);
+        }
+
         // PUT: api/ToDo/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutToDo([FromRoute] int id, [FromBody] ToDoList todo)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
 
             if (id != todo.ID)
-            {
                 return BadRequest();
-            }
 
             _context.Entry(todo).State = EntityState.Modified;
-
             try
             {
                 await _context.SaveChangesAsync();
@@ -49,51 +56,23 @@ namespace ASPNETBlazorCRUDApp.Server.Controllers
             catch (DbUpdateConcurrencyException)
             {
                 if (!ToDoExists(id))
-                {
                     return NotFound();
-                }
                 else
-                {
                     throw;
-                }
             }
-
             return NoContent();
-        }
-
-        // POST: api/ToDo
-        [HttpPost]
-        public async Task<IActionResult> PostToDo([FromBody] ToDoList todo)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            _context.ToDoLists.Add(todo);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetToDo", new { id = todo.ID }, todo);
         }
 
         // DELETE: api/ToDo/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteToDo([FromRoute] int id)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             var ToDo = await _context.ToDoLists.SingleOrDefaultAsync(m => m.ID == id);
             if (ToDo == null)
-            {
                 return NotFound();
-            }
 
             _context.ToDoLists.Remove(ToDo);
             await _context.SaveChangesAsync();
-
             return Ok(ToDo);
         }
 
