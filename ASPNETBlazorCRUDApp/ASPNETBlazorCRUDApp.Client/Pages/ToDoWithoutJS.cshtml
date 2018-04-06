@@ -21,7 +21,7 @@
         <div class="col-sm-2">
             @if (todos != null && todos.Count > 0)
             {
-            <button class="btn btn-danger" @onclick(async () => await DeleteAllToDos())>Delete All</button>
+                <button class="btn btn-danger" @onclick(async () => await DeleteAllToDos())>Delete All</button>
             }
         </div>
     </div>
@@ -29,72 +29,66 @@
 <br /><br />
 @if (todos == null)
 {
-<p><em>Loading...</em></p>
+    <p><em>Loading...</em></p>
 }
 else
 {
     @if (todos.Count > 0)
     {
-<table class='table table-striped table-bordered table-hover table-condensed' style="width:80%;">
-    <thead>
-        <tr>
-            <th style="width: 40%">Name</th>
-            <th style="width: 40%">Edit</th>
-            <th style="width: 20%">Delete</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var todo in todos)
-        {
-        <tr>
-            <td>
-                <span style="display:@HideOnEditing(todo.ID);">@todo.Item</span>
-                <input style="display:@ShowOnEditing(todo.ID);" @bind(todo.Item) />
-            </td>
-            <td>
-                <button style="display:@HideOnEditing(todo.ID);" class="btn btn-primary" @onclick(() => EditToDo(todo))>Edit</button>
-                <button style="display:@ShowOnEditing(todo.ID);" class="btn btn-success" @onclick(async () => await UpdateToDo(todo))>Update</button>
-                <button style="display:@ShowOnEditing(todo.ID);" class="btn btn-primary" @onclick(() => CancelToDo())>Cancel</button>
-            </td>
-            <td><button class="btn btn-danger" @onclick(async () => await DeleteToDo(todo.ID))>Delete</button></td>
-        </tr>
-        }
-    </tbody>
-</table>
+        <table class='table table-striped table-bordered table-hover table-condensed' style="width:80%;">
+            <thead>
+                <tr>
+                    <th style="width: 40%">Name</th>
+                    <th style="width: 40%">Edit</th>
+                    <th style="width: 20%">Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var todo in todos)
+                {
+                    <tr>
+                        <td>
+                            <span style="display:@HideOnEditing(todo.ID);">@todo.Item</span>
+                            <input style="display:@ShowOnEditing(todo.ID);" @bind(todo.Item) />
+                        </td>
+                        <td>
+                            <button style="display:@HideOnEditing(todo.ID);" class="btn btn-primary" @onclick(() => EditToDo(todo))>Edit</button>
+                            <button style="display:@ShowOnEditing(todo.ID);" class="btn btn-success" @onclick(async () => await UpdateToDo(todo))>Update</button>
+                            <button style="display:@ShowOnEditing(todo.ID);" class="btn btn-primary" @onclick(() => CancelToDo())>Cancel</button>
+                        </td>
+                        <td><button class="btn btn-danger" @onclick(async () => await DeleteToDo(todo.ID))>Delete</button></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
     }
 }
 
 
 @functions {
 
-        string itemName;
+    string itemName;
+    int SelectedID = -1;
+    IList<ToDoList> todos = new List<ToDoList>();
 
-        int SelectedID = -1;
-
-        IList<ToDoList>
-        todos = new List<ToDoList>
-            ();
-
-        String ShowOnEditing(int _id)
-        {
-            return (SelectedID == _id) ? "" : "none";
-        }
-
-        String HideOnEditing(int _id)
-        {
-            return (SelectedID == _id) ? "none" : "";
-        }
-
-
-        protected override async Task OnInitAsync()
+    protected override async Task OnInitAsync()
     {
         await Refresh();
     }
 
+    String ShowOnEditing(int _id)
+    {
+        return (SelectedID == _id) ? "" : "none";
+    }
+
+    String HideOnEditing(int _id)
+    {
+        return (SelectedID == _id) ? "none" : "";
+    }
+
     private async Task Refresh()
     {
-        todos = await Http.GetJsonAsync<ToDoList[]>
-            ("/api/ToDo");
+        todos = await Http.GetJsonAsync<ToDoList[]>("/api/ToDo");
         StateHasChanged();
     }
 
@@ -106,7 +100,6 @@ else
             {
                 Item = itemName,
             });
-
             itemName = "";
             await Refresh();
         }
@@ -117,11 +110,8 @@ else
         if (!string.IsNullOrEmpty(todo.Item))
         {
             await Http.SendJsonAsync(HttpMethod.Put, $"/api/ToDo/{todo.ID}", todo);
-
             SelectedID = -1;
-
             await Refresh();
-
         }
     }
 
@@ -133,7 +123,6 @@ else
 
     private void EditToDo(ToDoList todo)
     {
-
         SelectedID = todo.ID;
     }
 
