@@ -17,10 +17,19 @@
 
   <ItemGroup>
     <None Include="Pages\ToDo.cshtml" />
+    <None Include="Pages\ToDoWithoutJS.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
     <BlazorGenerate Remove="Pages\ToDo.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <BlazorGenerate Remove="Pages\ToDoWithoutJS.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="Pages\ToDoWithoutJS.cshtml" />
   </ItemGroup>
 
 </Project>
